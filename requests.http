@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:3000
+
+### 1. Список матеріалів (у відповіді заголовки X-API-Version та X-Service-Status)
+GET {{baseUrl}}/materials
+
+### 2. Пошук за назвою: search=пісок (кирилицю в URL закодовано)
+GET {{baseUrl}}/materials?search=%D0%BF%D1%96%D1%81%D0%BE%D0%BA
+
+### 3. Обмеження кількості записів
+GET {{baseUrl}}/materials?limit=2
+
+### 4. Існуючий запис
+GET {{baseUrl}}/materials/1
+
+### 5. Неіснуючий запис, очікується 404 Not Found
+GET {{baseUrl}}/materials/99999
+
+### 6. Створення, очікується 201 Created
+# @name createMaterial
+POST {{baseUrl}}/materials
+Content-Type: application/json
+
+{
+  "title": "Арматура А500",
+  "price": 38,
+  "unitOfMeasure": "kg",
+  "weightPerUnitKg": 1,
+  "isHeavyCargo": true
+}
+
+###
+@createdId = {{createMaterial.response.body.id}}
+
+### 7. Некоректні дані, очікується 400 Bad Request
+POST {{baseUrl}}/materials
+Content-Type: application/json
+
+{
+  "title": "",
+  "price": -5,
+  "unitOfMeasure": "pcs"
+}
+
+### 8. Часткове оновлення створеного запису (PATCH)
+PATCH {{baseUrl}}/materials/{{createdId}}
+Content-Type: application/json
+
+{
+  "price": 45
+}
+
+### 9. Видалення, очікується 204 No Content
+DELETE {{baseUrl}}/materials/{{createdId}}
+
+### 10. Повторне видалення, очікується 404 Not Found
+DELETE {{baseUrl}}/materials/{{createdId}}
